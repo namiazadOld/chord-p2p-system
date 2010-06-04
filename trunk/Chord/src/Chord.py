@@ -4,8 +4,8 @@ Created on Jun 4, 2010
 @author: nami
 '''
 
-from Peer import RequestHandler
-from Peer import Peer
+from Node import RequestHandler
+from Node import Peer
 from random import randint
 from threading import Thread
 from SimpleXMLRPCServer import SimpleXMLRPCServer
