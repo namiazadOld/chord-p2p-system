@@ -1,8 +1,3 @@
-'''
-Created on May 28, 2010
-
-@author: nami
-'''
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
