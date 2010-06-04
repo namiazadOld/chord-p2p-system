@@ -12,12 +12,13 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 
 class Server(Thread):
-    def __init__(self, nodeId):
+    def __init__(self, nodeId, successorId):
         Thread.__init__(self)
         self.nodeId = nodeId
+        self.nextId = successorId
     def run(self):
-        peer = SimpleXMLRPCServer(("localhost", 8000), requestHandler = RequestHandler)
-        print "Peer " + str(self.nodeId) + " is listening on port 8000..."
+        peer = SimpleXMLRPCServer(("localhost", 8000 + self.nodeId), requestHandler = RequestHandler)
+        print "Peer " + str(self.nodeId) + " is listening on port " + str(8000 + self.nodeId) + "..."
         peer.register_introspection_functions()
         peer.register_instance(Peer(self.nodeId))
         peer.serve_forever()
@@ -33,9 +34,13 @@ def Chord(m, n):
             continue
         nodeIdList.append(nodeId)
         count = count + 1
-        server = Server(nodeId)
+    
+    nodeIdList.sort()
+    count = 0;
+    while count < n:
+        server = Server(nodeIdList[count], nodeIdList[(count + 1) % n])
         server.start()
-        
+        count = count + 1
 
 if __name__ == '__main__':
-    Chord(8, 1)
+    Chord(8, 60)

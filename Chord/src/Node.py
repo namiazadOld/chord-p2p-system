@@ -9,7 +9,7 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
     def __init__(self, request, client_address, server, client_digest=None):
         SimpleXMLRPCRequestHandler.__init__(self, request, client_address, server)
     def set_id(self, nodeId):
-        self.rpc_paths = ('/' + str(nodeId))
+        self.rpc_paths = ('/' + str(nodeId),)
             
 class Peer:
     successorId = -1
