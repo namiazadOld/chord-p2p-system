@@ -16,7 +16,7 @@ class Server(Thread):
         Thread.__init__(self)
         self.nodeId = nodeId
     def run(self):
-        peer = SimpleXMLRPCServer(("localhost", 8000), requestHandler=RequestHandler(self.nodeId))
+        peer = SimpleXMLRPCServer(("localhost", 8000), requestHandler = RequestHandler)
         print "Peer " + str(self.nodeId) + " is listening on port 8000..."
         peer.register_introspection_functions()
         peer.register_instance(Peer(self.nodeId))
@@ -38,4 +38,4 @@ def Chord(m, n):
         
 
 if __name__ == '__main__':
-    Chord(8, 10)
+    Chord(8, 1)
