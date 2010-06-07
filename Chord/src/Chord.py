@@ -9,18 +9,18 @@ from Node import Peer
 from random import randint
 from threading import Thread
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-
+import xmlrpclib
 
 class Server(Thread):
-    def __init__(self, nodeId, successorId):
+    def __init__(self, nodeId): 
         Thread.__init__(self)
         self.nodeId = nodeId
-        self.nextId = successorId
     def run(self):
-        peer = SimpleXMLRPCServer(("localhost", 8000 + self.nodeId), requestHandler = RequestHandler)
+        peer = SimpleXMLRPCServer(("localhost", 8000 + self.nodeId), requestHandler = RequestHandler, allow_none = True)
         print "Peer " + str(self.nodeId) + " is listening on port " + str(8000 + self.nodeId) + "..."
         peer.register_introspection_functions()
-        peer.register_instance(Peer(self.nodeId))
+        new_peer = Peer(self.nodeId)
+        peer.register_instance(new_peer)
         peer.serve_forever()
         
 
@@ -38,9 +38,23 @@ def Chord(m, n):
     nodeIdList.sort()
     count = 0;
     while count < n:
-        server = Server(nodeIdList[count], nodeIdList[(count + 1) % n])
+        server = Server(nodeIdList[count])
         server.start()
         count = count + 1
-
+        
+    #Stabilizing the new created ring (setting the predecessors)
+    count = 0
+    while count < n:
+        currentId = nodeIdList[count]
+        successorId = nodeIdList[(count + 1) % n]
+        current = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + currentId))
+        current.set_successor(successorId)
+        successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + successorId))
+        successor.notify(currentId)     #set predecessor of successor
+        count = count + 1
+    
+    start_node = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + nodeIdList[0]))
+    start_node.print_chord()
+    
 if __name__ == '__main__':
-    Chord(8, 60)
+    Chord(8, 4)

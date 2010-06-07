@@ -1,5 +1,11 @@
-import xmlrpclib
+from Node import Peer
 
-proxy = xmlrpclib.ServerProxy("http://localhost:8071")
-print proxy
-print "The successor of 15: %s" % str(proxy.find_successor(186))
+#print proxy
+#print proxy.successorId
+#print "The successor of 15: %s" % str(proxy.find_successor(100))
+
+new_peer = Peer(120)
+new_peer.join(134)
+new_peer.stabilize()
+new_peer.print_chord()
+
