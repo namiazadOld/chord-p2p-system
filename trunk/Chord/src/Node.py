@@ -4,17 +4,52 @@ Created on Jun 4, 2010
 @author: nami
 '''
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
+import xmlrpclib
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     def __init__(self, request, client_address, server, client_digest=None):
         SimpleXMLRPCRequestHandler.__init__(self, request, client_address, server)
-    def set_id(self, nodeId):
-        self.rpc_paths = ('/' + str(nodeId),)
             
 class Peer:
-    successorId = -1
-    def __init__(self, id):
+    def __init__(self, id): #, successorId):
         self.id = id
+        self.predecessorId = None
+        self.successorId = id 
+        #self.successorId = successorId
     def find_successor(self, id):
-        return id
-        
+        if id > self.id and id < self.successorId :
+            return self.successorId
+        else :
+            successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
+            return successor.find_successor(id)
+    def join(self, targetId):
+        self.predecessorId = None
+        target = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + targetId))
+        self.successorId = target.find_successor(self.id)
+    def stabilize(self):
+        successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
+        x = successor.get_predecessorId()
+        if x > self.id and x < self.successorId :
+            self.successorId = x
+        successor.notify(self.id)
+    def notify(self, targetId):
+        if self.predecessorId == None or (targetId > self.predecessorId and targetId < self.id) :
+            self.predecessorId = targetId
+    def set_successor(self, successorId):
+        self.successorId = successorId
+    def get_predecessorId(self):
+        return self.predecessorId
+    def print_node(self):
+        print "NodeID = " + str(self.id) + " SuccessorID = " + str(self.successorId) + " Predecessor = " + str(self.predecessorId)
+    def print_chord(self, sourceId = None):
+        if (sourceId != self.id) :
+            self.print_node()
+            successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
+            successor.print_chord(self.id)
+    def stabilize_all(self, sourceId = None):
+        if (sourceId == 4) :
+            self.stabilize()
+            successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
+            successor.stabilize_all(sourceId + 1)
+              
+            
