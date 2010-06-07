@@ -42,14 +42,18 @@ class Peer:
     def print_node(self):
         print "NodeID = " + str(self.id) + " SuccessorID = " + str(self.successorId) + " Predecessor = " + str(self.predecessorId)
     def print_chord(self, sourceId = None):
-        if (sourceId != self.id) :
-            self.print_node()
+        if (sourceId == None):
+            sourceId = self.id
+        self.print_node()
+        if (self.successorId != sourceId):
             successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
-            successor.print_chord(self.id)
+            successor.print_chord(sourceId)
     def stabilize_all(self, sourceId = None):
-        if (sourceId == 4) :
-            self.stabilize()
+        if (sourceId == None):
+            sourceId = self.id
+        self.stabilize()
+        if (self.successorId != sourceId):
             successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
-            successor.stabilize_all(sourceId + 1)
-              
+            successor.stabilize_all(sourceId)
+       
             

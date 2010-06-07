@@ -15,12 +15,15 @@ class Server(Thread):
     def __init__(self, nodeId): 
         Thread.__init__(self)
         self.nodeId = nodeId
+        self.new_peer = None
+    def get_peer(self):
+        return self.new_peer
     def run(self):
         peer = SimpleXMLRPCServer(("localhost", 8000 + self.nodeId), requestHandler = RequestHandler, allow_none = True)
         print "Peer " + str(self.nodeId) + " is listening on port " + str(8000 + self.nodeId) + "..."
         peer.register_introspection_functions()
-        new_peer = Peer(self.nodeId)
-        peer.register_instance(new_peer)
+        self.new_peer = Peer(self.nodeId)
+        peer.register_instance(self.new_peer)
         peer.serve_forever()
         
 
@@ -55,6 +58,7 @@ def Chord(m, n):
     
     start_node = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + nodeIdList[0]))
     start_node.print_chord()
+    print 'Finish'
     
 if __name__ == '__main__':
     Chord(8, 4)
