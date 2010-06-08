@@ -5,6 +5,7 @@ Created on Jun 4, 2010
 '''
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 import xmlrpclib
+import threading
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     def __init__(self, request, client_address, server, client_digest=None):
@@ -15,6 +16,7 @@ class Peer:
         self.id = id
         self.predecessorId = None
         self.successorId = id 
+
         #self.successorId = successorId
     def find_successor(self, id):
         if id > self.id and id < self.successorId :
