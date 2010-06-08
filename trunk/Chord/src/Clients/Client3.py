@@ -1,5 +1,5 @@
 import xmlrpclib
 
-proxy = xmlrpclib.ServerProxy("http://localhost:8000/10")
-print proxy
-print "The successor of 15: %s" % str(proxy.find_successor(186))
+start_node = xmlrpclib.ServerProxy("http://localhost:8155" )
+start_node.print_chord()
+print 'Finish'
