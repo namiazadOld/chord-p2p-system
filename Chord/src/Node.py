@@ -12,12 +12,13 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
         SimpleXMLRPCRequestHandler.__init__(self, request, client_address, server)
             
 class Peer:
-    def __init__(self, id): #, successorId):
+    def __init__(self, id, m = 8): 
         self.id = id
         self.predecessorId = None
         self.successorId = id 
-
-        #self.successorId = successorId
+        self.finger = []
+        self.next = 0
+        self.m = m
     def find_successor(self, id):
         if id > self.id and id < self.successorId :
             return self.successorId
@@ -57,5 +58,9 @@ class Peer:
         if (self.successorId != sourceId):
             successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
             successor.stabilize_all(sourceId)
+    def fix_fingers(self):
+        self.next = (self.next % self.m) + 1
+        
+        
        
             
