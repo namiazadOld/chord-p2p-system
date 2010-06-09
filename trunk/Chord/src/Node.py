@@ -40,6 +40,8 @@ class Peer:
             self.predecessorId = targetId
     def set_successor(self, successorId):
         self.successorId = successorId
+    def get_successor(self):
+        return self.successorId
     def get_predecessorId(self):
         return self.predecessorId
     def print_node(self):
@@ -60,7 +62,21 @@ class Peer:
             successor.stabilize_all(sourceId)
     def fix_fingers(self):
         self.next = (self.next % self.m) + 1
-        
+        self.finger[next] = self.find_successor(self.id + pow(2,self.next - 1))
+    def closest_preceding_finger(self, nodeId):
+        counter = self.m
+        while counter > 0 :
+            if self.finger[counter] > self.id and self.finger[counter] < nodeId :
+                return self.finger[counter]
+        return self.id
+    def find_predecessor(self, nodeId):
+        tempId = self.id
+        temp = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + tempId))
+        while nodeId < tempId or nodeId > temp.get_successor :
+            tempId = temp.closest_preceding_finger(nodeId)
+            temp = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + tempId))
+        return tempId
+                 
         
        
             
