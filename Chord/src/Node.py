@@ -70,6 +70,9 @@ class Peer:
         return self.predecessorId
     def print_node(self):
         print "NodeID = " + str(self.id) + " SuccessorID = " + str(self.successorId) + " Predecessor = " + str(self.predecessorId)
+    def print_node_tofile(self):
+        f = open('d:\pp.txt', 'a')
+        f.write("NodeID = " + str(self.id) + " SuccessorID = " + str(self.successorId) + " Predecessor = " + str(self.predecessorId))
     def print_chord(self, sourceId = None):
         if (sourceId == None):
             sourceId = self.id
@@ -77,6 +80,13 @@ class Peer:
         if (self.successorId != sourceId):
             successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
             successor.print_chord(sourceId)
+    def print_chord_tofile(self, sourceId = None):
+        if (sourceId == None):
+            sourceId = self.id
+        self.print_node_tofile()
+        if (self.successorId != sourceId):
+            successor = xmlrpclib.ServerProxy("http://localhost:" + str(8000 + self.successorId))
+            successor.print_chord_tofile(sourceId)
     def stabilize_all(self, sourceId = None):
         if (sourceId == None):
             sourceId = self.id
