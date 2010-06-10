@@ -14,8 +14,8 @@ while server.get_peer() is None:
     doNothing = 1;
 
 new_peer = server.get_peer()
-new_peer.join(155)
+new_peer.join(116)
 
 time.sleep(5)
-new_peer.print_chord()
+new_peer.print_chord_tofile()
 
