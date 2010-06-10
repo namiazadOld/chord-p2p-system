@@ -1,5 +1,6 @@
 from Node import Peer
 from Chord import Server
+import time
 
 #print proxy
 #print proxy.successorId
@@ -13,11 +14,7 @@ while server.get_peer() is None:
     doNothing = 1;
 
 new_peer = server.get_peer()
-new_peer.join(97)
-new_peer.stabilize()
+new_peer.join(155)
+
+time.sleep(5)
 new_peer.print_chord()
-
-print 'AFTER STABILIZATION'
-
-new_peer.print_chord()
-

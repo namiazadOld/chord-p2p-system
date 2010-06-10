@@ -5,20 +5,44 @@ Created on Jun 4, 2010
 '''
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 import xmlrpclib
-import threading
+from threading import Thread
+import time
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     def __init__(self, request, client_address, server, client_digest=None):
+        
         SimpleXMLRPCRequestHandler.__init__(self, request, client_address, server)
+            
+class PeerStabilizer(Thread):    
+    def __init__(self, peer): 
+        Thread.__init__(self)
+        self.peer = peer
+    def run(self):
+        #wait using timer
+        
+        while True:
+            time.sleep(1)
+            self.peer.stabilize()
+            id = self.peer.get_id()
+            print str(id) + " is stabilized...." 
+            
+        
+   
             
 class Peer:
     def __init__(self, id, m = 8): 
         self.id = id
         self.predecessorId = None
         self.successorId = id 
+        
+        peerStabilizer = PeerStabilizer(self)
+        peerStabilizer.start()
+        #self.successorId = successorId
         self.finger = []
         self.next = 0
         self.m = m
+    def get_id(self):
+        return self.id
     def find_successor(self, id):
         if id > self.id and id < self.successorId :
             return self.successorId
